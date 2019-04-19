@@ -2,19 +2,17 @@ package com.android.skripsi.carikuliner;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.view.View;
 
-import com.android.skripsi.carikuliner.Model.PilihData;
-import com.android.skripsi.carikuliner.Model.GetPilihData;
-import com.android.skripsi.carikuliner.Rest.ApiClient;
-import com.android.skripsi.carikuliner.Rest.ApiInterface;
-import com.android.skripsi.carikuliner.Adapter.AdapterData;
+import com.android.skripsi.carikuliner.adapter.AdapterData;
+import com.android.skripsi.carikuliner.model.Alternatif;
+import com.android.skripsi.carikuliner.rest.ApiClient;
+import com.android.skripsi.carikuliner.rest.ApiInterface;
+import com.android.skripsi.carikuliner.model.GetAlternatif;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -37,25 +35,26 @@ public class PilihDataActivity extends AppCompatActivity {
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
         rvData.setLayoutManager(rvManager);
-        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+
         pdAct = this;
-        refresh();
+        load();
     }
 
-    public void refresh(){
-        Call<GetPilihData> pilihDataCall = apiInterface.getPilihDataCall();
-        pilihDataCall.enqueue(new Callback<GetPilihData>() {
+    public void load(){
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        Call<GetAlternatif> getAlternatifCall = apiInterface.getDataAll();
+        getAlternatifCall.enqueue(new Callback<GetAlternatif>() {
             @Override
-            public void onResponse(Call<GetPilihData> call, Response<GetPilihData> response) {
-                List<PilihData> pilihDataList = response.body().getPilihDataList();
-                Log.d("Retrofit Get", "Jumlah data : " + String.valueOf(pilihDataList.size()));
-                adapterData = new AdapterData(pilihDataList);
+            public void onResponse(Call<GetAlternatif> call, Response<GetAlternatif> response) {
+                List<Alternatif> alternatif = response.body().getAlternatifList();
+                Log.d("Results", "Hasil : " + String.valueOf(alternatif.size()));
+                adapterData = new AdapterData(alternatif);
                 rvData.setAdapter(adapterData);
             }
 
             @Override
-            public void onFailure(Call<GetPilihData> call, Throwable t) {
-                Log.d("Retrofit Get", t.toString());
+            public void onFailure(Call<GetAlternatif> call, Throwable t) {
+                Log.d("Results", t.toString());
             }
         });
     }

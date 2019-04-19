@@ -1,14 +1,11 @@
-package com.android.skripsi.carikuliner.Rest;
+package com.android.skripsi.carikuliner.rest;
 
-import com.android.skripsi.carikuliner.Model.GetPilihData;
+import com.android.skripsi.carikuliner.model.GetAlternatif;
 
 import retrofit2.Call;
-import retrofit2.http.Field;
-import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.HTTP;
 
 public interface ApiInterface {
-    @GET("get_datarecommend")
-    Call<GetPilihData> getPilihDataCall();
+    @GET("get_alldata")
+    Call<GetAlternatif> getDataAll();
 }
