@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">CariKuliner</string>
+    <string name="keterangan">
+        <br>Pengguna dapat menentukan bobot pada masing-masing kriteria sesuai dengan kehendak pengguna dengan skala 1-5,
+        dimana skala terkecil adalah angka 1 dan skala terbesar adalah 5. Nilai bobot kriteria yang telah ditentukan
+        oleh pengguna akan mempengaruhi hasil pencarian rekomendasi tempat kuliner khas yang didapatkan.</br>
+        <br>Berikut adalah penjelasan dari masing-masing kriteria</br>
+        <br>1. Jarak : rekomendasi tempat kuliner khas ditentukan berdasarkan jarak yang terdekat dari posisi pengguna saat ini.</br>
+        <br>2. Harga : rekomendasi tempat kuliner khas yang dipilih merupakan tempat kuliner yang menyajikan makanan dengan
+        harga termurah yang dapat disajikan oleh tempat kuliner tersebut.</br>
+        <br>3. Rating : tempat kuliner khas yang terpilih adalah tempat kuliner yang memiliki nilai rating tinggi yang diberikan
+        oleh pengguna pada Google Maps.</br>
+        <br>4. Lama Berdiri : Usia dari suatu tempat kuliner khas mempengaruhi hasil rekomendasi yang akan dipilih. Semakin besar
+        nilai bobot yang ditentukan pada kriteria ini, maka tempat kuliner khas yang didapat merupakan tempat yang paling lama
+        berdiri.</br>
+    </string>
 </resources>

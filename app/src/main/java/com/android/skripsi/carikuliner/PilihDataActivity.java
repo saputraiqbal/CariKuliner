@@ -1,5 +1,9 @@
 package com.android.skripsi.carikuliner;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -26,11 +30,15 @@ public class PilihDataActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapterData;
     private RecyclerView.LayoutManager rvManager;
     public static PilihDataActivity pdAct;
+    String bobot = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pilih_data);
+
+        final Bundle fromBobot = this.getIntent().getExtras();
+        bobot = fromBobot.getString("bobot");
 
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
@@ -57,5 +65,33 @@ public class PilihDataActivity extends AppCompatActivity {
                 Log.d("Results", t.toString());
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        askBack();
+    }
+
+    public void askBack(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Intent goBack = new Intent();
+                        goBack.putExtra("backPressed", true);
+                        setResult(Activity.RESULT_OK, goBack);
+                        finish();
+                        break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            break;
+                }
+            }
+        };
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Apakah Anda mau kembali? Anda harus set nilai bobot dari awal lagi")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener).show();
     }
 }
