@@ -1,6 +1,7 @@
 package com.android.skripsi.carikuliner;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView boxJarak, boxHarga, boxRating, boxUsia;
     int jarak = 1, harga = 1, rating = 1, usia = 1;
     String result = "";
+    SharedPreferences share;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +114,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.btnOK1:
                 result = boxJarak.getText().toString() + "+" + boxHarga.getText().toString() + "+" + boxRating.getText().toString()  + "+" + boxUsia.getText().toString();
+                share = getSharedPreferences("value_store", 0);
+                SharedPreferences.Editor editor = share.edit();
+                editor.putString("bobot", result);
+                editor.commit();
                 Intent toChooseAlt = new Intent(MainActivity.this, PilihDataActivity.class);
-                toChooseAlt.putExtra("bobot", result);
                 startActivityForResult(toChooseAlt, 1);
                 break;
         }
