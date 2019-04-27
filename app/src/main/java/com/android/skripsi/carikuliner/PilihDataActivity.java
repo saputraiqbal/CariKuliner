@@ -112,10 +112,10 @@ public class PilihDataActivity extends AppCompatActivity {
                 }
                 share = getSharedPreferences("value_store", 0);
                 SharedPreferences.Editor editor = share.edit();
-                editor.putString("Data Chosen", dataChosen);
+                editor.putString("data_chosen", dataChosen);
                 editor.commit();
                 Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
-                Toast.makeText(PilihDataActivity.this, "Data chosen : " + dataChosen, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(PilihDataActivity.this, "Data chosen : " + dataChosen, Toast.LENGTH_SHORT).show();
                 break;
         }
         return false;
