@@ -7,18 +7,18 @@ public class Rekomendasi {
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("nama")
+    @SerializedName("namaTempat")
     @Expose
     private String namaTempat;
     @SerializedName("jarak")
     @Expose
-    private int jarak;
-    @SerializedName("lat")
+    private double jarak;
+    @SerializedName("latTempat")
     @Expose
-    private float latitude;
-    @SerializedName("long")
+    private String latTempat;
+    @SerializedName("lonTempat")
     @Expose
-    private float longitude;
+    private String lonTempat;
 
     public String getId() {
         return id;
@@ -36,27 +36,27 @@ public class Rekomendasi {
         this.namaTempat = namaTempat;
     }
 
-    public int getJarak() {
+    public double getJarak() {
         return jarak;
     }
 
-    public void setJarak(int jarak) {
+    public void setJarak(double jarak) {
         this.jarak = jarak;
     }
 
-    public float getLatitude() {
-        return latitude;
+    public String getLatTempat() {
+        return latTempat;
     }
 
-    public void setLatitude(float latitude) {
-        this.latitude = latitude;
+    public void setLatTempat(String latTempat) {
+        this.latTempat = latTempat;
     }
 
-    public float getLongitude() {
-        return longitude;
+    public String getLonTempat() {
+        return lonTempat;
     }
 
-    public void setLongitude(float longitude) {
-        this.longitude = longitude;
+    public void setLonTempat(String lonTempat) {
+        this.lonTempat = lonTempat;
     }
 }

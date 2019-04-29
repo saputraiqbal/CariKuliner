@@ -8,24 +8,24 @@ import java.util.List;
 public class GetRekomendasi {
     @SerializedName("result")
     @Expose
-    private Rekomendasi rekomendasi;
+    private Rekomendasi result;
     @SerializedName("msg")
     @Expose
-    private Integer msg;
+    private int msg;
 
-    public Rekomendasi getRekomendasi() {
-        return rekomendasi;
+    public Rekomendasi getResult() {
+        return result;
     }
 
-    public void setRekomendasi(Rekomendasi rekomendasi) {
-        this.rekomendasi = rekomendasi;
+    public void setResult(Rekomendasi result) {
+        this.result = result;
     }
 
-    public Integer getMsg() {
+    public int getMsg() {
         return msg;
     }
 
-    public void setMsg(Integer msg) {
+    public void setMsg(int msg) {
         this.msg = msg;
     }
 }
