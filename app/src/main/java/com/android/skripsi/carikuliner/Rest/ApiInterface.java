@@ -15,8 +15,8 @@ public interface ApiInterface {
     Call<GetAlternatif> getDataAll();
 
     @GET("recommendations")
-    Call<GetRekomendasi> getRekomendasi(@Query("lat") String lat,
-                                           @Query("long") String _long,
+    Call<GetRekomendasi> getRekomendasi(@Query("lat") double lat,
+                                           @Query("long") double _long,
                                            @Query("weight") String weight,
                                            @Query("choice") String choice);
 }

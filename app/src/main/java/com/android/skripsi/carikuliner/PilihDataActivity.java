@@ -12,7 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.android.skripsi.carikuliner.adapter.AdapterData;
 import com.android.skripsi.carikuliner.model.Alternatif;
@@ -76,7 +75,7 @@ public class PilihDataActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-                        Log.d("Message Remove", item + " was removed");
+                        Log.d("Message Removed", item + " was removed");
                     }
                 });
                 rvData.setAdapter(adapterData);
@@ -107,15 +106,17 @@ public class PilihDataActivity extends AppCompatActivity {
                 for (int i = 0; i < selected.size(); i++){
                     dataChosen += selected.get(i).getIdSelected();
                     if(i < selected.size() - 1)
-                        dataChosen += "+";
+                        dataChosen += "-";
                     Log.d("View Data Enter", "Data ke- " + i + " yang masuk : " + selected.get(i).getIdSelected());
                 }
-                share = getSharedPreferences("value_store", 0);
-                SharedPreferences.Editor editor = share.edit();
-                editor.putString("data_chosen", dataChosen);
+                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                SharedPreferences.Editor editor = shares.edit();
+                editor.putString("choices", dataChosen);
                 editor.commit();
+                Log.d("itemStored", "[" + shares.getString("choices", dataChosen) + "] was added to SharedPreferences");
                 Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
-//                Toast.makeText(PilihDataActivity.this, "Data chosen : " + dataChosen, Toast.LENGTH_SHORT).show();
+                Intent toResult = new Intent(PilihDataActivity.this, MapsActivity.class);
+                startActivityForResult(toResult, 1);
                 break;
         }
         return false;

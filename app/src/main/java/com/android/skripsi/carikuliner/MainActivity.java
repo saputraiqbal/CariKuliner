@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     Button add1, subs1, add2, subs2, add3, subs3, add4, subs4, confirm;
@@ -113,11 +112,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btnOK1:
-                result = boxJarak.getText().toString() + "+" + boxHarga.getText().toString() + "+" + boxRating.getText().toString()  + "+" + boxUsia.getText().toString();
-                share = getSharedPreferences("value_store", 0);
-                SharedPreferences.Editor editor = share.edit();
-                editor.putString("bobot", result);
+                result = boxJarak.getText().toString() + "-" + boxHarga.getText().toString() + "-" + boxRating.getText().toString()  + "-" + boxUsia.getText().toString();
+                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                SharedPreferences.Editor editor = shares.edit();
+                editor.putString("weight", result);
                 editor.commit();
+                Log.d("itemStored", "[" + shares.getString("weight", result) + "] was added to SharedPreferences");
                 Intent toChooseAlt = new Intent(MainActivity.this, PilihDataActivity.class);
                 startActivityForResult(toChooseAlt, 1);
                 break;
