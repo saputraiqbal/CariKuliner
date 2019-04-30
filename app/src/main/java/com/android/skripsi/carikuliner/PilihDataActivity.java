@@ -41,6 +41,7 @@ public class PilihDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pilih_data);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);

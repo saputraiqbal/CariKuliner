@@ -1,18 +1,21 @@
 package com.android.skripsi.carikuliner;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.skripsi.carikuliner.model.GetRekomendasi;
@@ -20,10 +23,8 @@ import com.android.skripsi.carikuliner.model.Rekomendasi;
 import com.android.skripsi.carikuliner.rest.ApiClient;
 import com.android.skripsi.carikuliner.rest.ApiInterface;
 
-import com.google.android.gms.location.ActivityTransition;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -33,13 +34,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.Map;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback{
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback{
     private ApiInterface apiInterface;
     private SupportMapFragment mapFrag;
     private FusedLocationProviderClient locFused;
@@ -53,7 +52,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        getPermission();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getPermission();
     }
 
     private void getPermission(){
@@ -150,5 +150,42 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 break;
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                askBack();
+                break;
+        }
+        return false;
+    }
+
+    public void askBack(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Intent goBack = new Intent();
+                        goBack.putExtra("backPressed", true);
+                        setResult(Activity.RESULT_OK, goBack);
+                        finish();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Apakah Anda mau kembali?")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener).show();
+}
+
+    @Override
+    public void onBackPressed() {
+        askBack();
     }
 }
