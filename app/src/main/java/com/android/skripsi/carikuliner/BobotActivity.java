@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class BobotActivity extends AppCompatActivity implements View.OnClickListener{
     Button add1, subs1, add2, subs2, add3, subs3, add4, subs4, confirm;
     TextView boxJarak, boxHarga, boxRating, boxUsia;
     int jarak = 1, harga = 1, rating = 1, usia = 1;
@@ -21,7 +21,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle("Penilaian Kriteria");
 
+        setupUI();
+
+        add1.setOnClickListener(this);
+        subs1.setOnClickListener(this);
+        add2.setOnClickListener(this);
+        subs2.setOnClickListener(this);
+        add3.setOnClickListener(this);
+        subs3.setOnClickListener(this);
+        add4.setOnClickListener(this);
+        subs4.setOnClickListener(this);
+        confirm.setOnClickListener(this);
+    }
+    private void setupUI(){
         add1 = findViewById(R.id.btnAddBobot1);
         subs1 = findViewById(R.id.btnSubsBobot1);
         add2 = findViewById(R.id.btnAddBobot2);
@@ -40,16 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         boxHarga.setText(String.valueOf(harga));
         boxRating.setText(String.valueOf(rating));
         boxUsia.setText(String.valueOf(usia));
-
-        add1.setOnClickListener(this);
-        subs1.setOnClickListener(this);
-        add2.setOnClickListener(this);
-        subs2.setOnClickListener(this);
-        add3.setOnClickListener(this);
-        subs3.setOnClickListener(this);
-        add4.setOnClickListener(this);
-        subs4.setOnClickListener(this);
-        confirm.setOnClickListener(this);
     }
 
     @Override
@@ -118,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 editor.putString("weight", result);
                 editor.commit();
                 Log.d("itemStored", "[" + shares.getString("weight", result) + "] was added to SharedPreferences");
-                Intent toChooseAlt = new Intent(MainActivity.this, PilihDataActivity.class);
+                Intent toChooseAlt = new Intent(BobotActivity.this, PilihDataActivity.class);
                 startActivityForResult(toChooseAlt, 1);
                 break;
         }

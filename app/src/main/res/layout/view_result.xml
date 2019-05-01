@@ -23,30 +23,30 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_location_on_black_24dp" />
+            app:srcCompat="@drawable/ic_location_on_red_24dp" />
 
         <TextView
-            android:id="@+id/txtJarak"
+            android:id="@+id/txtNamaResult"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="TextView"
-            android:textSize="12dp"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/txtNama" />
-
-        <TextView
-            android:id="@+id/txtNama"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="TextView"
+            android:singleLine="true"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="20dp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/imageView"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtJarakResult"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:textSize="12dp"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toBottomOf="@+id/txtNamaResult" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,20 +54,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtJarak">
-
-            <Button
-                android:id="@+id/btnToDetail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_weight="1"
-                android:text="Lihat Detail" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView">
 
             <Button
                 android:id="@+id/btnToGMaps"
@@ -75,10 +67,21 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/colorPrimary"
+                android:backgroundTint="@color/colorPrimaryDark"
                 android:drawableStart="@drawable/ic_directions_black_24dp"
                 android:text="Dapatkan Arah"
                 android:textColor="@android:color/white" />
+
+            <Button
+                android:id="@+id/btnToDetail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@android:color/background_light"
+                android:text="Lihat Detail"
+                android:textColor="@color/colorPrimaryDark" />
+
         </LinearLayout>
 
     </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.android.skripsi.carikuliner.rest;
 
 import com.android.skripsi.carikuliner.model.GetAlternatif;
+import com.android.skripsi.carikuliner.model.GetDetail;
 import com.android.skripsi.carikuliner.model.GetRekomendasi;
 import com.android.skripsi.carikuliner.model.Rekomendasi;
 
@@ -19,4 +20,7 @@ public interface ApiInterface {
                                            @Query("long") double _long,
                                            @Query("weight") String weight,
                                            @Query("choice") String choice);
+
+    @GET("get_datarecommend")
+    Call<GetDetail> getDetail(@Query("id") String id);
 }

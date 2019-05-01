@@ -33,7 +33,6 @@ public class PilihDataActivity extends AppCompatActivity {
     private RecyclerView rvData;
     private RecyclerView.Adapter adapterData;
     private RecyclerView.LayoutManager rvManager;
-    public static PilihDataActivity pdAct;
     public List<SelectedAlternatif> selected = new ArrayList<>();
     SharedPreferences share;
 
@@ -41,14 +40,11 @@ public class PilihDataActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pilih_data);
+        getSupportActionBar().setTitle("Pilih Tempat");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
         rvData.setLayoutManager(rvManager);
-
-        pdAct = this;
-
         load();
     }
 

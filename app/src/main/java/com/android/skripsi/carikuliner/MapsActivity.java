@@ -10,12 +10,13 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.skripsi.carikuliner.model.GetRekomendasi;
@@ -34,6 +35,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,17 +47,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mapFrag;
     private FusedLocationProviderClient locFused;
     private GoogleMap mMap;
-    private double placeLat = 0.0;
-    private double place_long = 0.0;
-    private Rekomendasi rekomendasi = new Rekomendasi();
     private static boolean isPermissionGranted = false;
+    TextView resultNama, resultJarak;
+    Button btnViewDetail, btnToMaps;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+        getSupportActionBar().setTitle("Hasil Rekomendasi");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getPermission();
+        resultNama = findViewById(R.id.txtNamaResult);
+        resultJarak = findViewById(R.id.txtJarakResult);
+        btnViewDetail = findViewById(R.id.btnToDetail);
+        btnToMaps = findViewById(R.id.btnToGMaps);
+        btnViewDetail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent toDetail = new Intent(MapsActivity.this, DetailActivity.class);
+                startActivityForResult(toDetail, 1);
+            }
+        });
+        getPermission();
     }
 
     private void getPermission(){
@@ -102,17 +117,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void getRekomendasi(LatLng coordinate){
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
-        SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
+        final SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
         double latUser = coordinate.latitude;
         double _longUser = coordinate.longitude;
         String weight = shared.getString("weight", "");
         String choice = shared.getString("choices", "");;
-        Call<GetRekomendasi> rekomendasiCall = apiInterface.getRekomendasi(latUser, _longUser, weight, choice);
+        final Call<GetRekomendasi> rekomendasiCall = apiInterface.getRekomendasi(latUser, _longUser, weight, choice);
         rekomendasiCall.enqueue(new Callback<GetRekomendasi>() {
             @Override
             public void onResponse(Call<GetRekomendasi> call, Response<GetRekomendasi> response) {
                 Log.d("Success", "Object : " + response.body().getResult().toString());
-                showOnMaps(response.body().getResult());
+                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                SharedPreferences.Editor editor = shares.edit();
+                editor.putString("idChosen", response.body().getResult().getId());
+                editor.putString("jarak", String.valueOf(response.body().getResult().getJarak()));
+                editor.commit();
+                updateUI(response.body().getResult());
             }
             @Override
             public void onFailure(Call<GetRekomendasi> call, Throwable t) {
@@ -121,10 +141,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void showOnMaps(Rekomendasi rekomendasi){
+    private void updateUI(Rekomendasi rekomendasi){
         LatLng places = new LatLng(Double.parseDouble(rekomendasi.getLatTempat()), Double.parseDouble(rekomendasi.getLonTempat()));
         mMap.addMarker(new MarkerOptions().position(places).title(rekomendasi.getNamaTempat()));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(places, 15f));
+        resultNama.setText(rekomendasi.getNamaTempat());
+        DecimalFormat format = new DecimalFormat("#.##");
+        format.setRoundingMode(RoundingMode.CEILING);
+        double jarak = rekomendasi.getJarak();
+        resultJarak.setText("Sekitar " + String.valueOf(format.format(jarak)) + " meter dari posisimu saat ini");
     }
 
     @Override
@@ -182,7 +207,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         dialogBuilder.setMessage("Apakah Anda mau kembali?")
                 .setPositiveButton("YA", dialogListener)
                 .setNegativeButton("TIDAK", dialogListener).show();
-}
+    }
 
     @Override
     public void onBackPressed() {
