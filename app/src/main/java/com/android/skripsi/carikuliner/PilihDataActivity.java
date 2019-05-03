@@ -10,8 +10,9 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.android.skripsi.carikuliner.adapter.AdapterData;
 import com.android.skripsi.carikuliner.model.Alternatif;
@@ -34,7 +35,9 @@ public class PilihDataActivity extends AppCompatActivity {
     private RecyclerView.Adapter adapterData;
     private RecyclerView.LayoutManager rvManager;
     public List<SelectedAlternatif> selected = new ArrayList<>();
-    SharedPreferences share;
+    Button btnSave, btnChooseAll;
+    public boolean isChecked = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,8 @@ public class PilihDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_pilih_data);
         getSupportActionBar().setTitle("Pilih Tempat");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        btnSave = findViewById(R.id.btnConfirmChoose);
+        btnChooseAll = findViewById(R.id.btnChooseAll);
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
         rvData.setLayoutManager(rvManager);
@@ -77,6 +82,42 @@ public class PilihDataActivity extends AppCompatActivity {
                 });
                 rvData.setAdapter(adapterData);
                 Log.d("Results", "Hasil : " + String.valueOf(adapterData.getItemCount()));
+
+                btnChooseAll.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(!isChecked){
+                            ((AdapterData)adapterData).setSelectedAll();
+                            btnChooseAll.setText("HAPUS SEMUA");
+                            isChecked = true;
+                        }else{
+                            ((AdapterData)adapterData).setUnselectedAll();
+                            btnChooseAll.setText("PILIH SEMUA");
+                            isChecked = false;
+                        }
+                    }
+                });
+
+                btnSave.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String dataChosen = "";
+                        for (int i = 0; i < selected.size(); i++){
+                            dataChosen += selected.get(i).getIdSelected();
+                            if(i < selected.size() - 1)
+                                dataChosen += "-";
+                            Log.d("View Data Enter", "Data ke- " + i + " yang masuk : " + selected.get(i).getIdSelected());
+                        }
+                        SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = shares.edit();
+                        editor.putString("choices", dataChosen);
+                        editor.commit();
+                        Log.d("itemStored", "[" + shares.getString("choices", dataChosen) + "] was added to SharedPreferences");
+                        Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
+                        Intent toResult = new Intent(PilihDataActivity.this, MapsActivity.class);
+                        startActivityForResult(toResult, 1);
+                    }
+                });
             }
 
             @Override
@@ -87,33 +128,11 @@ public class PilihDataActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_pilih_data, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         switch (item.getItemId()){
             case android.R.id.home:
                 askBack();
-                break;
-            case R.id.save_pilih_data:
-                String dataChosen = "";
-                for (int i = 0; i < selected.size(); i++){
-                    dataChosen += selected.get(i).getIdSelected();
-                    if(i < selected.size() - 1)
-                        dataChosen += "-";
-                    Log.d("View Data Enter", "Data ke- " + i + " yang masuk : " + selected.get(i).getIdSelected());
-                }
-                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
-                SharedPreferences.Editor editor = shares.edit();
-                editor.putString("choices", dataChosen);
-                editor.commit();
-                Log.d("itemStored", "[" + shares.getString("choices", dataChosen) + "] was added to SharedPreferences");
-                Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
-                Intent toResult = new Intent(PilihDataActivity.this, MapsActivity.class);
-                startActivityForResult(toResult, 1);
                 break;
         }
         return false;

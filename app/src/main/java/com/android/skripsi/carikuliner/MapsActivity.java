@@ -91,6 +91,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         if(isPermissionGranted){
             getData();
+            mMap.getUiSettings().setMapToolbarEnabled(false);
         }else{
             Log.d("isPermissionGranted", "Maps cannot be accessed due to no premission to access location from device");
         }
