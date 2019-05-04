@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -147,10 +148,30 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(places).title(rekomendasi.getNamaTempat()));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(places, 15f));
         resultNama.setText(rekomendasi.getNamaTempat());
-        DecimalFormat format = new DecimalFormat("#.##");
+        DecimalFormat format = new DecimalFormat("#,##");
         format.setRoundingMode(RoundingMode.CEILING);
         double jarak = rekomendasi.getJarak();
         resultJarak.setText("Sekitar " + String.valueOf(format.format(jarak)) + " meter dari posisimu saat ini");
+        final String uriLocs = "http://maps.google.com/maps?daddr=" + rekomendasi.getLatTempat() + "," + rekomendasi.getLonTempat();
+        btnToMaps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("uriLocs", uriLocs);
+                Intent toMaps = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uriLocs));
+                if (toMaps.resolveActivity(getPackageManager()) != null){
+                    startActivity(toMaps);
+                }else{
+                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MapsActivity.this);
+                    dialogBuilder.setMessage("Aplikasi Google Maps belum terpasang pada perangkat Anda. Mohon pasang terlebih dahulu untuk mendapatkan petunjuk arah.")
+                            .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    finish();
+                                }
+                            }).show();
+                }
+            }
+        });
     }
 
     @Override
