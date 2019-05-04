@@ -2,9 +2,12 @@ package com.android.skripsi.carikuliner;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -42,15 +45,53 @@ public class PilihDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkConnection(this);
+    }
+
+    private void setupUI(){
         setContentView(R.layout.activity_pilih_data);
         getSupportActionBar().setTitle("Pilih Tempat");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         btnSave = findViewById(R.id.btnConfirmChoose);
         btnChooseAll = findViewById(R.id.btnChooseAll);
         rvData = (RecyclerView) findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
         rvData.setLayoutManager(rvManager);
-        load();
+    }
+
+    private void checkConnection(Context ctx){
+        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
+        if (conManager != null){
+            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
+            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
+                setupUI();
+                load();
+            }else{
+                alertNoConnection();
+            }
+        }
+    }
+
+    private void alertNoConnection(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkConnection(PilihDataActivity.this);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
     }
 
     public void load(){

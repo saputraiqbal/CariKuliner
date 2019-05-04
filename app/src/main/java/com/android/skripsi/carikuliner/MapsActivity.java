@@ -3,12 +3,19 @@ package com.android.skripsi.carikuliner;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.media.audiofx.Equalizer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
@@ -25,8 +32,18 @@ import com.android.skripsi.carikuliner.model.Rekomendasi;
 import com.android.skripsi.carikuliner.rest.ApiClient;
 import com.android.skripsi.carikuliner.rest.ApiInterface;
 
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStates;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -48,6 +65,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private SupportMapFragment mapFrag;
     private FusedLocationProviderClient locFused;
     private GoogleMap mMap;
+    private GoogleApiClient googleApiClient;
     private static boolean isPermissionGranted = false;
     TextView resultNama, resultJarak;
     Button btnViewDetail, btnToMaps;
@@ -55,9 +73,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkConnection(this);
+    }
+
+    private void setupUI(){
         setContentView(R.layout.activity_maps);
         getSupportActionBar().setTitle("Hasil Rekomendasi");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         resultNama = findViewById(R.id.txtNamaResult);
         resultJarak = findViewById(R.id.txtJarakResult);
         btnViewDetail = findViewById(R.id.btnToDetail);
@@ -69,8 +92,69 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 startActivityForResult(toDetail, 1);
             }
         });
-        getPermission();
     }
+
+
+    private void checkConnection(Context ctx){
+        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
+        LocationManager locManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        if(!locManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            alertNoGPS();
+        }else{
+            if (conManager != null){
+                NetworkInfo activeNet = conManager.getActiveNetworkInfo();
+                if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
+                    setupUI();
+                    getPermission();
+                }else{
+                    alertNoConnection();
+                }
+            }
+        }
+    }
+
+    private void alertNoGPS(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkConnection(MapsActivity.this);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan GPS. Mohon sambungkan perangkat Anda ke GPS")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
+    }
+
+    private void alertNoConnection(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkConnection(MapsActivity.this);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
+    }
+
 
     private void getPermission(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -151,7 +235,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         DecimalFormat format = new DecimalFormat("#,##");
         format.setRoundingMode(RoundingMode.CEILING);
         double jarak = rekomendasi.getJarak();
-        resultJarak.setText("Sekitar " + String.valueOf(format.format(jarak)) + " meter dari posisimu saat ini");
+        resultJarak.setText("Sekitar " + String.valueOf(format.format(jarak)) + " km dari posisimu saat ini");
         final String uriLocs = "http://maps.google.com/maps?daddr=" + rekomendasi.getLatTempat() + "," + rekomendasi.getLonTempat();
         btnToMaps.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -2,9 +2,12 @@ package com.android.skripsi.carikuliner;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,7 +31,6 @@ import retrofit2.Response;
 
 public class DetailActivity extends AppCompatActivity {
 
-    ImageView imgPlaces;
     TextView namaTempat, jarakTempat, lokasi, harga, rating, usia, tglBerdiri;
     RatingBar ratingBar;
     ApiInterface apiInterface;
@@ -37,11 +39,41 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
-        getSupportActionBar().setTitle("Detail Tempat");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setupUI();
-        load();
+        checkConnection(this);
+    }
+
+    private void checkConnection(Context ctx){
+        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
+        if (conManager != null){
+            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
+            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
+                setupUI();
+                load();
+            }else{
+                alertNoConnection();
+            }
+        }
+    }
+
+    private void alertNoConnection(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        checkConnection(DetailActivity.this);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
     }
 
     private void load(){
@@ -66,7 +98,10 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void setupUI(){
-        imgPlaces = findViewById(R.id.imgPlace);
+        setContentView(R.layout.activity_detail);
+        getSupportActionBar().setTitle("Detail Tempat");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         namaTempat = findViewById(R.id.txtNamaTempat);
         jarakTempat = findViewById(R.id.txtJarakTempat);
         lokasi = findViewById(R.id.txtLokasi);
@@ -78,7 +113,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void updateUI(DetailInfo result, String jarak_temp){
-        DecimalFormat format = new DecimalFormat("#.##");
+        DecimalFormat format = new DecimalFormat("#,##");
         format.setRoundingMode(RoundingMode.CEILING);
         double jarak = Double.parseDouble(jarak_temp);
         float valRating = Float.parseFloat(result.getRating());
@@ -86,7 +121,7 @@ public class DetailActivity extends AppCompatActivity {
         int yearPlace = Integer.parseInt(result.getTahunBerdiri());
         int age = yearCurrent - yearPlace;
         namaTempat.setText(result.getNamaTempat());
-        jarakTempat.setText(format.format(jarak) + " dari posisimu saat ini");
+        jarakTempat.setText(format.format(jarak) + " km dari posisimu saat ini");
         lokasi.setText(result.getAlamat());
         harga.setText("Mulai dari Rp " + result.getHarga());
         rating.setText(result.getRating() + "/5");
