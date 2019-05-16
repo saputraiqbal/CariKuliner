@@ -6,15 +6,42 @@
     android:layout_height="match_parent"
     tools:context=".PilihDataActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvData"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/linearLayout3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout2"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/subtitle_PilihAct"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvData"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@+id/linearLayout2"
+        android:layout_below="@+id/linearLayout3"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="0dp"
         android:scrollbars="vertical">
 
     </android.support.v7.widget.RecyclerView>
@@ -39,7 +66,7 @@
             android:layout_margin="8dp"
             android:layout_weight="1"
             android:text="Pilih Semua"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="@color/colorAccent" />
 
         <Button
             android:id="@+id/btnConfirmChoose"
@@ -49,7 +76,7 @@
             android:layout_alignBottom="@+id/linearLayout2"
             android:layout_margin="8dp"
             android:layout_weight="1"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorAccent"
             android:text="Konfirmasi"
             android:textColor="@android:color/white" />
     </LinearLayout>

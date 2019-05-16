@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.android.skripsi.carikuliner.adapter.AdapterData;
 import com.android.skripsi.carikuliner.model.Alternatif;
@@ -45,13 +46,13 @@ public class PilihDataActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Pilih Tempat Kuliner Khas");
         checkConnection(this);
     }
 
     private void setupUI(){
         setContentView(R.layout.activity_pilih_data);
-        getSupportActionBar().setTitle("Pilih Tempat");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         btnSave = findViewById(R.id.btnConfirmChoose);
         btnChooseAll = findViewById(R.id.btnChooseAll);
@@ -144,19 +145,25 @@ public class PilihDataActivity extends AppCompatActivity {
                     public void onClick(View v) {
                         String dataChosen = "";
                         for (int i = 0; i < selected.size(); i++){
-                            dataChosen += selected.get(i).getIdSelected();
-                            if(i < selected.size() - 1)
-                                dataChosen += "-";
-                            Log.d("View Data Enter", "Data ke- " + i + " yang masuk : " + selected.get(i).getIdSelected());
+                            if(i%2 == 0){
+                                dataChosen += selected.get(i).getIdSelected();
+                                if(i < selected.size() - 2)
+                                    dataChosen += "-";
+                                Log.d("View Data Enter", "Data ke- " + i + " yang masuk : " + selected.get(i).getIdSelected());
+                            }
                         }
-                        SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
-                        SharedPreferences.Editor editor = shares.edit();
-                        editor.putString("choices", dataChosen);
-                        editor.commit();
-                        Log.d("itemStored", "[" + shares.getString("choices", dataChosen) + "] was added to SharedPreferences");
-                        Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
-                        Intent toResult = new Intent(PilihDataActivity.this, MapsActivity.class);
-                        startActivityForResult(toResult, 1);
+                        if(!dataChosen.isEmpty()){
+                            SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = shares.edit();
+                            editor.putString("choices", dataChosen);
+                            editor.commit();
+                            Log.d("itemStored", "[" + shares.getString("choices", dataChosen) + "] was added to SharedPreferences");
+                            Log.d("Result", "Banyaknya yang dipilih : " + String.valueOf(selected.size()));
+                            Intent toResult = new Intent(PilihDataActivity.this, ResultActivity.class);
+                            startActivityForResult(toResult, 1);
+                        }else{
+                            Toast.makeText(PilihDataActivity.this, "Silahkan pilih data yang ingin Anda cari", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -164,46 +171,32 @@ public class PilihDataActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetAlternatif> call, Throwable t) {
                 Log.d("Results", t.toString());
+                alertTimeout();
             }
         });
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case android.R.id.home:
-                askBack();
-                break;
-        }
-        return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        askBack();
-    }
-
-    public void askBack(){
+    private void alertTimeout(){
         DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        Intent goBack = new Intent();
-                        goBack.putExtra("backPressed", true);
-                        setResult(Activity.RESULT_OK, goBack);
+                        load();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Intent goBack = new Intent(PilihDataActivity.this, HomeActivity.class);
+                        startActivityForResult(goBack, 1);
                         finish();
                         break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            break;
                 }
             }
         };
-
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Apakah Anda mau kembali? Anda harus set nilai bobot dari awal lagi")
+        dialogBuilder.setMessage("Ada masalah saat terhubung dengan layanan. Ingin coba lagi?")
                 .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener).show();
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
     }
 }

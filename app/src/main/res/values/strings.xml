@@ -1,18 +1,14 @@
 <resources>
     <string name="app_name">CariKuliner</string>
-    <string name="keterangan">
-        <br>Pengguna dapat menentukan bobot pada masing-masing kriteria sesuai dengan kehendak pengguna dengan skala 1-5,
-        dimana skala terkecil adalah angka 1 dan skala terbesar adalah 5. Nilai bobot kriteria yang telah ditentukan
-        oleh pengguna akan mempengaruhi hasil pencarian rekomendasi tempat kuliner khas yang didapatkan.</br>
-        <br>Berikut adalah penjelasan dari masing-masing kriteria</br>
-        <br>1. Jarak : rekomendasi tempat kuliner khas ditentukan berdasarkan jarak yang terdekat dari posisi pengguna saat ini.</br>
-        <br>2. Harga : rekomendasi tempat kuliner khas yang dipilih merupakan tempat kuliner yang menyajikan makanan dengan
-        harga termurah yang dapat disajikan oleh tempat kuliner tersebut.</br>
-        <br>3. Rating : tempat kuliner khas yang terpilih adalah tempat kuliner yang memiliki nilai rating tinggi yang diberikan
-        oleh pengguna pada Google Maps.</br>
-        <br>4. Lama Berdiri : Usia dari suatu tempat kuliner khas mempengaruhi hasil rekomendasi yang akan dipilih. Semakin besar
-        nilai bobot yang ditentukan pada kriteria ini, maka tempat kuliner khas yang didapat merupakan tempat yang paling lama
-        berdiri.</br>
-    </string>
+    <string name="subtitle1"></string>
     <string name="title_activity_result">Map</string>
+    <string name="title_result">Inilah tempat kuliner khas yang kami rekomendasikan sesuai dengan keinginan Anda</string>
+    <string name="subtitle_Intro">Selamat datang di aplikasi CariKuliner! Aplikasi ini akan membantu Anda mencari tempat kuliner khas yang hanya ada di Malang.
+        Kami akan mencari rekomendasi tempat kuliner khas yang terbaik untukmu dengan menggunakan beberapa kriteria, diantaranya adalah :</string>
+    <string name="subtitle_ToNextAct">Silakan tekan tombol di bawah ini jika Anda ingin tahu tempat kuliner khas yang kami rekomendasikan untukmu</string>
+    <string name="intro_jarak"><b>Jarak terdekat</b> antara posisi pengguna dengan lokasi yang direkomendasikan</string>
+    <string name="intro_harga"><b>Harga termurah</b> yang tersedia</string>
+    <string name="intro_rating"><b>Rating terfavorit</b> yang dihimpun dari Google</string>
+    <string name="intro_usia"><b>Umur</b> tempat kuliner khas</string>
+    <string name="subtitle_PilihAct">Pilih tempat kuliner khas yang ingin Anda gunakan untuk melakukan pencarian rekomendasi</string>
 </resources>

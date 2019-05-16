@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -39,6 +38,8 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().setTitle("Info Detail");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         checkConnection(this);
     }
 
@@ -53,6 +54,30 @@ public class DetailActivity extends AppCompatActivity {
                 alertNoConnection();
             }
         }
+    }
+
+    private void alertTimeout(){
+        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        load();
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        Intent goBack = new Intent(DetailActivity.this, HomeActivity.class);
+                        startActivityForResult(goBack, 1);
+                        finish();
+                        break;
+                }
+            }
+        };
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setMessage("Ada masalah saat terhubung dengan layanan. Ingin coba lagi?")
+                .setPositiveButton("YA", dialogListener)
+                .setNegativeButton("TIDAK", dialogListener)
+                .setCancelable(false)
+                .show();
     }
 
     private void alertNoConnection(){
@@ -93,14 +118,13 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<GetDetail> call, Throwable t) {
                 Log.d("Error", t.getMessage());
+                alertTimeout();
             }
         });
     }
 
     private void setupUI(){
         setContentView(R.layout.activity_detail);
-        getSupportActionBar().setTitle("Detail Tempat");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         namaTempat = findViewById(R.id.txtNamaTempat);
         jarakTempat = findViewById(R.id.txtJarakTempat);
