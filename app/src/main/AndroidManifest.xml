@@ -34,7 +34,7 @@
         <activity
             android:name=".ResultActivity">
         </activity>
-        <activity android:name=".PilihDataActivity" />
+        <activity android:name=".PilihKategoriActivity" />
         <activity android:name=".HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

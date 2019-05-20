@@ -37,7 +37,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.btnBegin:
-                Intent toChooseAlt = new Intent(HomeActivity.this, PilihDataActivity.class);
+                Intent toChooseAlt = new Intent(HomeActivity.this, PilihKategoriActivity.class);
                 startActivityForResult(toChooseAlt, 1);
                 break;
         }

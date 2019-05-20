@@ -64,6 +64,67 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
         checkConnection(this);
     }
 
+    private void initLoc(){
+        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFrag.getMapAsync(ResultActivity.this);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        if(isPermissionGranted){
+            getKoordinat();
+            mMap.getUiSettings().setMapToolbarEnabled(false);
+        }else{
+            Log.d("isPermissionGranted", "Maps cannot be accessed due to no premission to access location from device");
+        }
+    }
+
+    private void getKoordinat(){
+        locFused = LocationServices.getFusedLocationProviderClient(this);
+        try{
+            final Task userLocation = locFused.getLastLocation();
+            userLocation.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if(task.isSuccessful() && task.getResult() != null){
+                        Log.d("GetLocation", "User location is found");
+                        Location userLoc = (Location)task.getResult();
+                        getRekomendasi(new LatLng(userLoc.getLatitude(), userLoc.getLongitude()));
+                    }
+                }
+            });
+        }catch (SecurityException e){
+            Log.d("SecurityException", e.getMessage());
+        }
+    }
+
+    private void getRekomendasi(LatLng coordinate){
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        final SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
+        double latUser = coordinate.latitude;
+        double _longUser = coordinate.longitude;
+        String category = shared.getString("cat", "0");;
+        final Call<GetRekomendasi> rekomendasiCall = apiInterface.getRekomendasi(latUser, _longUser, category, "1-1-1-1");
+        rekomendasiCall.enqueue(new Callback<GetRekomendasi>() {
+            @Override
+            public void onResponse(Call<GetRekomendasi> call, Response<GetRekomendasi> response) {
+                Log.d("Success", "Object : " + response.body().getResult().toString());
+                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
+                SharedPreferences.Editor editor = shares.edit();
+                editor.putString("idChosen", response.body().getResult().getId());
+                editor.putString("jarak", String.valueOf(response.body().getResult().getJarak()));
+                editor.commit();
+                updateUI(response.body().getResult());
+            }
+            @Override
+            public void onFailure(Call<GetRekomendasi> call, Throwable t) {
+                Log.d("Error", "Error : " + t.getMessage());
+                alertTimeout();
+            }
+        });
+    }
+
     private void setupUI(){
         setContentView(R.layout.activity_maps);
 
@@ -165,78 +226,6 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
                 .show();
     }
 
-
-    private void getPermission(){
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-        }else{
-            isPermissionGranted = true;
-            initLoc();
-        }
-    }
-
-    private void initLoc(){
-        mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFrag.getMapAsync(ResultActivity.this);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        if(isPermissionGranted){
-            getKoordinat();
-            mMap.getUiSettings().setMapToolbarEnabled(false);
-        }else{
-            Log.d("isPermissionGranted", "Maps cannot be accessed due to no premission to access location from device");
-        }
-    }
-
-    private void getKoordinat(){
-        locFused = LocationServices.getFusedLocationProviderClient(this);
-        try{
-            final Task userLocation = locFused.getLastLocation();
-            userLocation.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if(task.isSuccessful() && task.getResult() != null){
-                        Log.d("GetLocation", "User location is found");
-                        Location userLoc = (Location)task.getResult();
-                        getRekomendasi(new LatLng(userLoc.getLatitude(), userLoc.getLongitude()));
-                    }
-                }
-            });
-        }catch (SecurityException e){
-            Log.d("SecurityException", e.getMessage());
-        }
-    }
-
-    private void getRekomendasi(LatLng coordinate){
-        apiInterface = ApiClient.getClient().create(ApiInterface.class);
-        final SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
-        double latUser = coordinate.latitude;
-        double _longUser = coordinate.longitude;
-        String choice = shared.getString("choices", "");;
-        final Call<GetRekomendasi> rekomendasiCall = apiInterface.getRekomendasi(latUser, _longUser, "1-1-1-1", choice);
-        rekomendasiCall.enqueue(new Callback<GetRekomendasi>() {
-            @Override
-            public void onResponse(Call<GetRekomendasi> call, Response<GetRekomendasi> response) {
-                Log.d("Success", "Object : " + response.body().getResult().toString());
-                SharedPreferences shares = getSharedPreferences("value_stores", MODE_PRIVATE);
-                SharedPreferences.Editor editor = shares.edit();
-                editor.putString("idChosen", response.body().getResult().getId());
-                editor.putString("jarak", String.valueOf(response.body().getResult().getJarak()));
-                editor.commit();
-                updateUI(response.body().getResult());
-            }
-            @Override
-            public void onFailure(Call<GetRekomendasi> call, Throwable t) {
-                Log.d("Error", "Error : " + t.getMessage());
-                alertTimeout();
-            }
-        });
-    }
-
     private void updateUI(Rekomendasi rekomendasi){
         LatLng places = new LatLng(Double.parseDouble(rekomendasi.getLatTempat()), Double.parseDouble(rekomendasi.getLonTempat()));
         mMap.addMarker(new MarkerOptions().position(places).title(rekomendasi.getNamaTempat()));
@@ -266,6 +255,17 @@ public class ResultActivity extends AppCompatActivity implements OnMapReadyCallb
                 }
             }
         });
+    }
+
+
+    private void getPermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }else{
+            isPermissionGranted = true;
+            initLoc();
+        }
     }
 
     @Override

@@ -20,28 +20,34 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_location_on_red_24dp" />
 
-        <TextView
-            android:id="@+id/txtNamaResult"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:singleLine="true"
-            android:textColor="@color/colorAccent"
-            android:textSize="20dp"
-            android:textStyle="bold"
+            android:layout_marginEnd="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/txtJarakResult"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:textSize="12dp"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toBottomOf="@+id/txtNamaResult" />
+            <TextView
+                android:id="@+id/txtNamaResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:singleLine="true"
+                android:textColor="@color/colorAccent"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/txtJarakResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="12dp"/>
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

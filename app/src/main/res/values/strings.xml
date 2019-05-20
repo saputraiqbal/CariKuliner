@@ -10,5 +10,5 @@
     <string name="intro_harga"><b>Harga termurah</b> yang tersedia</string>
     <string name="intro_rating"><b>Rating terfavorit</b> yang dihimpun dari Google</string>
     <string name="intro_usia"><b>Umur</b> tempat kuliner khas</string>
-    <string name="subtitle_PilihAct">Pilih tempat kuliner khas yang ingin Anda gunakan untuk melakukan pencarian rekomendasi</string>
+    <string name="subtitle_PilihAct">Pilih kategori makanan yang Anda inginkan</string>
 </resources>

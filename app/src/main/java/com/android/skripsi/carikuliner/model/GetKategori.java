@@ -5,20 +5,20 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-public class GetAlternatif {
+public class GetKategori {
     @SerializedName("result")
     @Expose
-    private List<Alternatif> alternatifList;
+    private List<Kategori> kategoriList;
     @SerializedName("msg")
     @Expose
     String msg;
 
-    public List<Alternatif> getAlternatifList() {
-        return alternatifList;
+    public List<Kategori> getKategoriList() {
+        return kategoriList;
     }
 
-    public void setAlternatifList(List<Alternatif> alternatifList) {
-        this.alternatifList = alternatifList;
+    public void setKategoriList(List<Kategori> kategoriList) {
+        this.kategoriList = kategoriList;
     }
 
     public String getMsg() {
