@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.skripsi.carikuliner.ResultActivity;
+import com.android.skripsi.carikuliner.RecommendationActivity;
 import com.android.skripsi.carikuliner.model.Kategori;
 import com.android.skripsi.carikuliner.R;
 
@@ -47,7 +47,7 @@ public class AdapterKategori extends RecyclerView.Adapter<AdapterKategori.VHolde
                 editor.putString("cat", category);
                 editor.commit();
                 Log.d("category", "Category " + list.get(position).getKategori() + " has chosen");
-                Intent toResult = new Intent(ctx, ResultActivity.class);
+                Intent toResult = new Intent(ctx, RecommendationActivity.class);
                 ctx.startActivity(toResult);
             }
         });

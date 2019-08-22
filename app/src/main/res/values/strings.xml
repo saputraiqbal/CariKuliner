@@ -11,4 +11,10 @@
     <string name="intro_rating"><b>Rating terfavorit</b> yang dihimpun dari Google</string>
     <string name="intro_usia"><b>Umur</b> tempat kuliner khas</string>
     <string name="subtitle_PilihAct">Pilih kategori makanan yang Anda inginkan</string>
+    <string name="alert_no_connection">Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet</string>
+    <string name="alert_timeout">Ada masalah saat terhubung dengan layanan. Ingin coba lagi?</string>
+    <string name="yes">YA</string>
+    <string name="no">TIDAK</string>
+    <string name="alert_no_gps">Saat ini Anda tidak terhubung dengan GPS. Mohon sambungkan perangkat Anda ke GPS</string>
+    <string name="ask_back">Apakah Anda mau kembali?</string>
 </resources>

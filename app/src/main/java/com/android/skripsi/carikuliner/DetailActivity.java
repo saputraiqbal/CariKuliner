@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -28,12 +27,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements GetDataInterface, ConnectionInterface, DialogInterface.OnClickListener{
 
     TextView namaTempat, jarakTempat, lokasi, harga, rating, usia, tglBerdiri;
     RatingBar ratingBar;
     ApiInterface apiInterface;
+    static AlertDialog dialogNoConnection, dialogTimeout;
     private DetailInfo detail = new DetailInfo();
+    private String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,87 +44,8 @@ public class DetailActivity extends AppCompatActivity {
         checkConnection(this);
     }
 
-    private void checkConnection(Context ctx){
-        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
-        if (conManager != null){
-            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
-            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
-                setupUI();
-                load();
-            }else{
-                alertNoConnection();
-            }
-        }
-    }
-
-    private void alertTimeout(){
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        load();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        Intent goBack = new Intent(DetailActivity.this, HomeActivity.class);
-                        startActivityForResult(goBack, 1);
-                        finish();
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Ada masalah saat terhubung dengan layanan. Ingin coba lagi?")
-                .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener)
-                .setCancelable(false)
-                .show();
-    }
-
-    private void alertNoConnection(){
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        checkConnection(DetailActivity.this);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet")
-                .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener)
-                .setCancelable(false)
-                .show();
-    }
-
-    private void load(){
-        SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
-        String id = shared.getString("idChosen", "");
-        final String jarak = shared.getString("jarak", "0.00");
-        apiInterface = ApiClient.getClient().create(ApiInterface.class);
-        Call<GetDetail> getDetailCall = apiInterface.getDetail(id);
-        getDetailCall.enqueue(new Callback<GetDetail>() {
-            @Override
-            public void onResponse(Call<GetDetail> call, Response<GetDetail> response) {
-                Log.d("GetData", response.body().getDetailInfo().toString() + " has been obtained");
-                detail = response.body().getDetailInfo();
-                updateUI(detail, jarak);
-            }
-
-            @Override
-            public void onFailure(Call<GetDetail> call, Throwable t) {
-                Log.d("Error", t.getMessage());
-                alertTimeout();
-            }
-        });
-    }
-
-    private void setupUI(){
+    @Override
+    public void setupUI() {
         setContentView(R.layout.activity_detail);
 
         namaTempat = findViewById(R.id.txtNamaTempat);
@@ -136,22 +58,81 @@ public class DetailActivity extends AppCompatActivity {
         tglBerdiri = findViewById(R.id.txtTglBerdiri);
     }
 
-    private void updateUI(DetailInfo result, String jarak_temp){
+    @Override
+    public void loadData() {
+        Bundle getBundle = getIntent().getExtras();
+        id = getBundle.getString("id");
+        apiInterface = ApiClient.getClient().create(ApiInterface.class);
+        Call<GetDetail> getDetailCall = apiInterface.getDetail(id);
+        getDetailCall.enqueue(new Callback<GetDetail>() {
+            @Override
+            public void onResponse(Call<GetDetail> call, Response<GetDetail> response) {
+                Log.d("GetData", response.body().getDetailInfo().toString() + " has been obtained");
+                detail = response.body().getDetailInfo();
+                updateUI();
+            }
+
+            @Override
+            public void onFailure(Call<GetDetail> call, Throwable t) {
+                Log.d("Error", t.getMessage());
+                alertTimeout();
+            }
+        });
+    }
+
+    @Override
+    public void updateUI() {
         DecimalFormat format = new DecimalFormat("#,##");
         format.setRoundingMode(RoundingMode.CEILING);
-        double jarak = Double.parseDouble(jarak_temp);
-        float valRating = Float.parseFloat(result.getRating());
+        double jarak = detail.getJarak();
+        float valRating = Float.parseFloat(detail.getRating());
         int yearCurrent = Calendar.getInstance().get(Calendar.YEAR);
-        int yearPlace = Integer.parseInt(result.getTahunBerdiri());
+        int yearPlace = Integer.parseInt(detail.getTahunBerdiri());
         int age = yearCurrent - yearPlace;
-        namaTempat.setText(result.getNamaTempat());
+        namaTempat.setText(detail.getNamaTempat());
         jarakTempat.setText(format.format(jarak) + " km dari posisimu saat ini");
-        lokasi.setText(result.getAlamat());
-        harga.setText("Mulai dari Rp " + result.getHarga());
-        rating.setText(result.getRating() + "/5");
+        lokasi.setText(detail.getAlamat());
+        harga.setText("Mulai dari Rp " + detail.getHarga());
+        rating.setText(detail.getRating() + "/5");
         ratingBar.setRating(valRating);
         usia.setText("sejak " + String.valueOf(age) + " tahun yang lalu");
-        tglBerdiri.setText("Berdiri pada tahun " + result.getTahunBerdiri());
+        tglBerdiri.setText("Berdiri pada tahun " + detail.getTahunBerdiri());
+    }
+
+    @Override
+    public void checkConnection(Context ctx) {
+        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
+        if (conManager != null){
+            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
+            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
+                setupUI();
+                loadData();
+            }else{
+                alertNoConnection();
+            }
+        }
+    }
+
+    @Override
+    public void alertTimeout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_timeout)
+                .setPositiveButton(R.string.yes, this)
+                .setNegativeButton(R.string.no, this)
+                .setCancelable(false);
+        dialogTimeout = builder.create();
+        dialogTimeout.show();
+    }
+
+    @Override
+    public void alertNoConnection() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_no_connection)
+                .setPositiveButton(R.string.yes, this)
+                .setNegativeButton(R.string.no, this)
+                .setCancelable(false);
+        dialogNoConnection = builder.create();
+        dialogNoConnection.show();
     }
 
     @Override
@@ -174,5 +155,29 @@ public class DetailActivity extends AppCompatActivity {
         goBack.putExtra("backPressed", true);
         setResult(Activity.RESULT_OK, goBack);
         finish();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (dialog == dialogTimeout){
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    loadData();
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    Intent goBack = new Intent(DetailActivity.this, HomeActivity.class);
+                    startActivityForResult(goBack, 1);
+                    finish();
+                    break;
+            }
+        }else if (dialog == dialogNoConnection){
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    checkConnection(DetailActivity.this);
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+            }
+        }
     }
 }

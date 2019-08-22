@@ -21,18 +21,21 @@ import com.android.skripsi.carikuliner.rest.ApiClient;
 import com.android.skripsi.carikuliner.rest.ApiInterface;
 import com.android.skripsi.carikuliner.model.GetKategori;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PilihKategoriActivity extends AppCompatActivity {
+public class PilihKategoriActivity extends AppCompatActivity implements ConnectionInterface, GetDataInterface, DialogInterface.OnClickListener {
 
     ApiInterface apiInterface;
     private RecyclerView rvData;
     private RecyclerView.Adapter adapterData;
     private RecyclerView.LayoutManager rvManager;
+    protected List<Kategori> kategori = new ArrayList<>();
+    AlertDialog dialogTimeout, dialogNoConnection, dialogBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,58 +45,24 @@ public class PilihKategoriActivity extends AppCompatActivity {
         checkConnection(this);
     }
 
-    private void setupUI(){
+    @Override
+    public void setupUI() {
         setContentView(R.layout.activity_pilih_kategori);
 
-        rvData = (RecyclerView) findViewById(R.id.rvData);
+        rvData = findViewById(R.id.rvData);
         rvManager = new LinearLayoutManager(this);
         rvData.setLayoutManager(rvManager);
     }
 
-    private void checkConnection(Context ctx){
-        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
-        if (conManager != null){
-            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
-            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
-                setupUI();
-                load();
-            }else{
-                alertNoConnection();
-            }
-        }
-    }
-
-    private void alertNoConnection(){
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        checkConnection(PilihKategoriActivity.this);
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Saat ini Anda tidak terhubung dengan internet. Mohon sambungkan perangkat Anda ke internet")
-                .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener)
-                .setCancelable(false)
-                .show();
-    }
-
-    public void load(){
+    @Override
+    public void loadData() {
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         Call<GetKategori> getAlternatifCall = apiInterface.getKategori();
         getAlternatifCall.enqueue(new Callback<GetKategori>() {
             @Override
             public void onResponse(Call<GetKategori> call, Response<GetKategori> response) {
-                List<Kategori> kategori = response.body().getKategoriList();
-                rvData.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
-                adapterData = new AdapterKategori(kategori);
-                rvData.setAdapter(adapterData);
+                kategori.addAll(response.body().getKategoriList());
+                updateUI();
                 Log.d("result", "Sukses");
             }
 
@@ -105,50 +74,56 @@ public class PilihKategoriActivity extends AppCompatActivity {
         });
     }
 
-    private void alertTimeout(){
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        load();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        Intent goBack = new Intent(PilihKategoriActivity.this, HomeActivity.class);
-                        startActivityForResult(goBack, 1);
-                        finish();
-                        break;
-                }
+    @Override
+    public void updateUI() {
+        rvData.addItemDecoration(new DividerItemDecoration(getApplicationContext(), DividerItemDecoration.VERTICAL));
+        adapterData = new AdapterKategori(kategori);
+        rvData.setAdapter(adapterData);
+    }
+
+    @Override
+    public void checkConnection(Context ctx) {
+        ConnectivityManager conManager = (ConnectivityManager)ctx.getSystemService(CONNECTIVITY_SERVICE);
+        if (conManager != null){
+            NetworkInfo activeNet = conManager.getActiveNetworkInfo();
+            if((activeNet != null) && (activeNet.isConnectedOrConnecting())){
+                setupUI();
+                loadData();
+            }else{
+                alertNoConnection();
             }
-        };
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Ada masalah saat terhubung dengan layanan. Ingin coba lagi?")
-                .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener)
-                .setCancelable(false)
-                .show();
+        }
+    }
+
+    @Override
+    public void alertNoConnection() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_no_connection)
+                .setPositiveButton(R.string.yes, this)
+                .setNegativeButton(R.string.no, this)
+                .setCancelable(false);
+        dialogNoConnection = builder.create();
+        dialogNoConnection.show();
+    }
+
+    @Override
+    public void alertTimeout() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.alert_timeout)
+                .setPositiveButton(R.string.yes, this)
+                .setNegativeButton(R.string.no, this)
+                .setCancelable(false);
+        dialogTimeout = builder.create();
+        dialogTimeout.show();
     }
 
     public void askBack(){
-        DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which){
-                    case DialogInterface.BUTTON_POSITIVE:
-                        Intent goBack = new Intent();
-                        goBack.putExtra("backPressed", true);
-                        setResult(Activity.RESULT_OK, goBack);
-                        finish();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        break;
-                }
-            }
-        };
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setMessage("Apakah Anda mau kembali?")
-                .setPositiveButton("YA", dialogListener)
-                .setNegativeButton("TIDAK", dialogListener).show();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.ask_back)
+                .setPositiveButton(R.string.yes, this)
+                .setNegativeButton(R.string.no, this);
+        dialogBack = builder.create();
+        dialogBack.show();
     }
 
     @Override
@@ -159,5 +134,40 @@ public class PilihKategoriActivity extends AppCompatActivity {
                 break;
         }
         return false;
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (dialog == dialogNoConnection){
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    checkConnection(PilihKategoriActivity.this);
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+            }
+        }else if (dialog == dialogTimeout){
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    loadData();
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    Intent goBack = new Intent(PilihKategoriActivity.this, HomeActivity.class);
+                    startActivityForResult(goBack, 1);
+                    finish();
+                    break;
+            }
+        }else if (dialog == dialogBack){
+            switch (which){
+                case DialogInterface.BUTTON_POSITIVE:
+                    Intent goBack = new Intent();
+                    goBack.putExtra("backPressed", true);
+                    setResult(Activity.RESULT_OK, goBack);
+                    finish();
+                    break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+            }
+        }
     }
 }

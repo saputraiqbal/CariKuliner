@@ -32,7 +32,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".ResultActivity">
+            android:name=".RecommendationActivity">
         </activity>
         <activity android:name=".PilihKategoriActivity" />
         <activity android:name=".HomeActivity">
