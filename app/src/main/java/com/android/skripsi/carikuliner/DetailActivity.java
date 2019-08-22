@@ -35,6 +35,7 @@ public class DetailActivity extends AppCompatActivity implements GetDataInterfac
     static AlertDialog dialogNoConnection, dialogTimeout;
     private DetailInfo detail = new DetailInfo();
     private String id;
+    private double jarak;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +63,7 @@ public class DetailActivity extends AppCompatActivity implements GetDataInterfac
     public void loadData() {
         Bundle getBundle = getIntent().getExtras();
         id = getBundle.getString("id");
+        jarak = getBundle.getDouble("jarak");
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         Call<GetDetail> getDetailCall = apiInterface.getDetail(id);
         getDetailCall.enqueue(new Callback<GetDetail>() {
@@ -82,9 +84,8 @@ public class DetailActivity extends AppCompatActivity implements GetDataInterfac
 
     @Override
     public void updateUI() {
-        DecimalFormat format = new DecimalFormat("#,##");
+        DecimalFormat format = new DecimalFormat("#.##");
         format.setRoundingMode(RoundingMode.CEILING);
-        double jarak = detail.getJarak();
         float valRating = Float.parseFloat(detail.getRating());
         int yearCurrent = Calendar.getInstance().get(Calendar.YEAR);
         int yearPlace = Integer.parseInt(detail.getTahunBerdiri());

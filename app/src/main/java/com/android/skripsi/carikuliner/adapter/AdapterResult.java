@@ -44,7 +44,7 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
         final Rekomendasi rekomendasi = listRekomendasi.get(position);
         Log.d("whatisit", rekomendasi.getNamaTempat());
         holder.resultName.setText(rekomendasi.getNamaTempat());
-        DecimalFormat format = new DecimalFormat("#,##");
+        DecimalFormat format = new DecimalFormat("#.##");
         format.setRoundingMode(RoundingMode.CEILING);
         String jarak = "Sekitar " + format.format(rekomendasi.getJarak()) + " km dari posisimu saat ini";
         holder.resultDistance.setText(jarak);
@@ -75,6 +75,7 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
                 Context ctx = v.getContext();
                 Intent toDetail = new Intent(ctx, DetailActivity.class);
                 toDetail.putExtra("id", rekomendasi.getId());
+                toDetail.putExtra("jarak", rekomendasi.getJarak());
                 ctx.startActivity(toDetail);
             }
         });

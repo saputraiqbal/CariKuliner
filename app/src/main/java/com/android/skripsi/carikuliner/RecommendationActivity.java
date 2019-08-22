@@ -82,10 +82,29 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if(isPermissionGranted){
-            loadData();
+            getKoordinat();
             mMap.getUiSettings().setMapToolbarEnabled(false);
         }else{
             Log.d("isPermissionGranted", "Maps cannot be accessed due to no premission to access location from device");
+        }
+    }
+
+    private void getKoordinat(){
+        locFused = LocationServices.getFusedLocationProviderClient(this);
+        try{
+            final Task userLocation = locFused.getLastLocation();
+            userLocation.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if(task.isSuccessful() && task.getResult() != null){
+                        Log.d("GetLocation", "User location is found");
+                        userLoc = (Location)task.getResult();
+                        loadData();
+                    }
+                }
+            });
+        }catch (SecurityException e){
+            Log.d("SecurityException", e.getMessage());
         }
     }
 
@@ -98,21 +117,6 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
 
     @Override
     public void loadData() {
-        locFused = LocationServices.getFusedLocationProviderClient(this);
-        try{
-            final Task userLocation = locFused.getLastLocation();
-            userLocation.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if(task.isSuccessful() && task.getResult() != null){
-                        Log.d("GetLocation", "User location is found");
-                        userLoc = (Location)task.getResult();
-                    }
-                }
-            });
-        }catch (SecurityException e){
-            Log.d("SecurityException", e.getMessage());
-        }
         apiInterface = ApiClient.getClient().create(ApiInterface.class);
         final SharedPreferences shared = getSharedPreferences("value_stores", MODE_PRIVATE);
         double latUser = userLoc.getLatitude();
