@@ -36,6 +36,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -77,12 +79,34 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
     // add markers for each recommendations
     private void addMarkers(List<Rekomendasi> rekomendasis) {
         int i = 0;
+        LatLng places = null;
         do{
-            LatLng places = new LatLng(Double.parseDouble(rekomendasis.get(i).getLatTempat()), Double.parseDouble(rekomendasis.get(i).getLonTempat()));
-            mMap.addMarker(new MarkerOptions().position(places).title(rekomendasis.get(i).getNamaTempat()));
+            switch (i){
+                case 0:
+                    places = new LatLng(Double.parseDouble(rekomendasis.get(i).getLatTempat()), Double.parseDouble(rekomendasis.get(i).getLonTempat()));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(places)
+                            .title(rekomendasis.get(i).getNamaTempat())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_gold)));
+                    break;
+                case 1:
+                    places = new LatLng(Double.parseDouble(rekomendasis.get(i).getLatTempat()), Double.parseDouble(rekomendasis.get(i).getLonTempat()));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(places)
+                            .title(rekomendasis.get(i).getNamaTempat())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_silver)));
+                    break;
+                case 2:
+                    places = new LatLng(Double.parseDouble(rekomendasis.get(i).getLatTempat()), Double.parseDouble(rekomendasis.get(i).getLonTempat()));
+                    mMap.addMarker(new MarkerOptions()
+                            .position(places)
+                            .title(rekomendasis.get(i).getNamaTempat())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_bronze)));
+                    break;
+            }
             i++;
-        }while (i != rekomendasis.size());
-    }
+            }while (i != rekomendasis.size());
+        }
 
     //get permission to access GPS on smartphone
     private void getPermission(){
@@ -182,7 +206,6 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
                     Log.d("currentPosition", "Current position is " + currentPosRv);
                     LatLng currentPlaces = new LatLng(Double.parseDouble(rekomendasis.get(currentPosRv).getLatTempat()), Double.parseDouble(rekomendasis.get(currentPosRv).getLonTempat()));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPlaces, 15f));
-
                 }
             }
 

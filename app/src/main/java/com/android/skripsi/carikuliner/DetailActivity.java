@@ -55,6 +55,7 @@ public class DetailActivity extends AppCompatActivity implements UIInterface, Co
         harga = findViewById(R.id.txtHarga);
         rating = findViewById(R.id.txtRating);
         ratingBar = findViewById(R.id.ratingBar);
+        ratingBar.setNumStars(5);
         usia = findViewById(R.id.txtUsia);
         tglBerdiri = findViewById(R.id.txtTglBerdiri);
     }
@@ -91,7 +92,7 @@ public class DetailActivity extends AppCompatActivity implements UIInterface, Co
         int yearPlace = Integer.parseInt(detail.getTahunBerdiri());
         int age = yearCurrent - yearPlace;
         namaTempat.setText(detail.getNamaTempat());
-        String jarakText = "Sekitar" + format.format(jarak) + " km dari posisimu saat ini";
+        String jarakText = "Sekitar " + format.format(jarak) + " km dari posisimu saat ini";
         jarakTempat.setText(jarakText);
         lokasi.setText(detail.getAlamat());
         harga.setText("Mulai dari Rp " + detail.getHarga());

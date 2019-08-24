@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CariKuliner</string>
+    <string name="app_name">Cari Kuliner</string>
     <string name="subtitle1"></string>
     <string name="title_activity_result">Map</string>
     <string name="title_result">Inilah tempat kuliner khas yang kami rekomendasikan sesuai dengan keinginan Anda</string>
@@ -17,4 +17,11 @@
     <string name="no">TIDAK</string>
     <string name="alert_no_gps">Saat ini Anda tidak terhubung dengan GPS. Mohon sambungkan perangkat Anda ke GPS</string>
     <string name="ask_back">Apakah Anda mau kembali?</string>
+    <string name="selamat_datang">Selamat Datang!</string>
+    <string name="home_message">mulai cari rekomendasi untukku</string>
+    <string name="about">About Application</string>
+    <string name="developed_by">Developed by :</string>
+    <string name="iqbal_santoso_putra">Iqbal Santoso Putra</string>
+    <string name="university_of_brawijaya_2019">University of Brawijaya, 2019</string>
+    <string name="about_apps">About Apps</string>
 </resources>

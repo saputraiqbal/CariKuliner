@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,11 +14,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.skripsi.carikuliner.DetailActivity;
 import com.android.skripsi.carikuliner.R;
 import com.android.skripsi.carikuliner.model.Rekomendasi;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestBuilder;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -48,6 +55,10 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
         format.setRoundingMode(RoundingMode.CEILING);
         String jarak = format.format(rekomendasi.getJarak()) + " km dari posisimu saat ini";
         holder.resultDistance.setText(jarak);
+        Glide.with(holder.itemView.getContext())
+                .load(applyBadges(position))
+                .apply(RequestOptions.overrideOf(50,50))
+                .into(holder.imgBadges);
         final String uriLocs = "http://maps.google.com/maps?daddr=" + rekomendasi.getLatTempat() + "," + rekomendasi.getLonTempat();
         holder.goToMaps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,6 +92,19 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
         });
     }
 
+    //apply badges each iterator
+    private int applyBadges(int pos){
+        switch (pos){
+            case 0:
+                return R.drawable.ic_badges_gold;
+            case 1:
+                return R.drawable.ic_badges_silver;
+            case 2:
+                return R.drawable.ic_badges_bronze;
+                default: return 0;
+        }
+    }
+
     @Override
     public int getItemCount() {
         return listRekomendasi.size();
@@ -89,11 +113,13 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
     public class VHolder extends RecyclerView.ViewHolder{
         public TextView resultName, resultDistance;
         public Button goToMaps, goToDetail;
+        public ImageView imgBadges;
 
         public VHolder(View itemView) {
             super(itemView);
             resultName = itemView.findViewById(R.id.txtNamaResult);
             resultDistance = itemView.findViewById(R.id.txtJarakResult);
+            imgBadges = itemView.findViewById(R.id.imgBadges);
             goToMaps = itemView.findViewById(R.id.btnToGMaps);
             goToDetail = itemView.findViewById(R.id.btnToDetail);
         }

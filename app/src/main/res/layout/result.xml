@@ -15,14 +15,14 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imgBadges"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_location_on_red_24dp" />
+            tools:src="@drawable/ic_location_on_red_24dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,25 +32,23 @@
             android:layout_marginEnd="8dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintStart_toEndOf="@+id/imgBadges"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/txtNamaResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
                 android:singleLine="true"
                 android:textColor="@color/colorAccent"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/txtJarakResult"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textSize="14sp"
+                android:textSize="12sp"
                 android:visibility="visible" />
         </LinearLayout>
 
@@ -66,7 +64,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView">
+        app:layout_constraintTop_toBottomOf="@+id/imgBadges">
 
         <Button
             android:id="@+id/btnToGMaps"
@@ -81,6 +79,7 @@
             android:padding="8dp"
             android:text="Dapatkan Arah"
             android:textColor="@android:color/white"
+            android:textSize="12sp"
             android:visibility="visible" />
 
         <Button
@@ -93,6 +92,7 @@
             android:background="@drawable/border_button"
             android:text="Detail"
             android:textColor="@color/colorAccent"
+            android:textSize="12sp"
             android:visibility="visible" />
 
     </LinearLayout>
