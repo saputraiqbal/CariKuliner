@@ -27,7 +27,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailActivity extends AppCompatActivity implements GetDataInterface, ConnectionInterface, DialogInterface.OnClickListener{
+public class DetailActivity extends AppCompatActivity implements UIInterface, ConnectionInterface, DialogInterface.OnClickListener{
 
     TextView namaTempat, jarakTempat, lokasi, harga, rating, usia, tglBerdiri;
     RatingBar ratingBar;
@@ -91,7 +91,8 @@ public class DetailActivity extends AppCompatActivity implements GetDataInterfac
         int yearPlace = Integer.parseInt(detail.getTahunBerdiri());
         int age = yearCurrent - yearPlace;
         namaTempat.setText(detail.getNamaTempat());
-        jarakTempat.setText(format.format(jarak) + " km dari posisimu saat ini");
+        String jarakText = "Sekitar" + format.format(jarak) + " km dari posisimu saat ini";
+        jarakTempat.setText(jarakText);
         lokasi.setText(detail.getAlamat());
         harga.setText("Mulai dari Rp " + detail.getHarga());
         rating.setText(detail.getRating() + "/5");

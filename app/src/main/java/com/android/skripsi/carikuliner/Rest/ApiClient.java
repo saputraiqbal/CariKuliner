@@ -10,8 +10,9 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+// class to connect application to web service using RESTful web service
 public class ApiClient {
-    public static final String BASE_URL = "http://192.168.1.4/rest_ci/index.php/";
+    public static final String BASE_URL = "http://192.168.1.65/rest_ci/index.php/";
 //    public static final String BASE_URL = "https://carikulinerapi.000webhostapp.com/rest_ci/index.php/";
     private static Retrofit retrofit;
     public static Retrofit getClient(){

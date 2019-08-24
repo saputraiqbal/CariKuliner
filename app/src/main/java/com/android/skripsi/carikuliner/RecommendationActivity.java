@@ -17,7 +17,9 @@ import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -30,10 +32,12 @@ import com.android.skripsi.carikuliner.rest.ApiInterface;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
@@ -44,7 +48,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RecommendationActivity extends AppCompatActivity implements OnMapReadyCallback, GetDataInterface, DialogInterface.OnClickListener, ConnectionInterface, ConnectionInterface.GPS {
+public class RecommendationActivity extends AppCompatActivity implements OnMapReadyCallback, UIInterface, DialogInterface.OnClickListener, ConnectionInterface, ConnectionInterface.GPS {
     private ApiInterface apiInterface;
     private SupportMapFragment mapFrag;
     private FusedLocationProviderClient locFused;
@@ -53,6 +57,7 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
     private RecyclerView rvResult;
     protected List<Rekomendasi> rekomendasis = new ArrayList<>();
     protected Location userLoc = null;
+    protected int currentPosRv = 0;
     AlertDialog dialogTimeout, dialogNoConnection, dialogNoGPS, dialogBack;
 
     @Override
@@ -63,11 +68,23 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
         checkConnection(this);
     }
 
+    //initiate Map Fragment
     private void initLoc(){
         mapFrag = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFrag.getMapAsync(RecommendationActivity.this);
     }
 
+    // add markers for each recommendations
+    private void addMarkers(List<Rekomendasi> rekomendasis) {
+        int i = 0;
+        do{
+            LatLng places = new LatLng(Double.parseDouble(rekomendasis.get(i).getLatTempat()), Double.parseDouble(rekomendasis.get(i).getLonTempat()));
+            mMap.addMarker(new MarkerOptions().position(places).title(rekomendasis.get(i).getNamaTempat()));
+            i++;
+        }while (i != rekomendasis.size());
+    }
+
+    //get permission to access GPS on smartphone
     private void getPermission(){
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
@@ -78,6 +95,7 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
         }
     }
 
+    //set Map when ready
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -89,6 +107,7 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
         }
     }
 
+    //get user's current location
     private void getKoordinat(){
         locFused = LocationServices.getFusedLocationProviderClient(this);
         try{
@@ -141,12 +160,37 @@ public class RecommendationActivity extends AppCompatActivity implements OnMapRe
 
     @Override
     public void updateUI() {
-        rvResult.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, true));
+        final LinearLayoutManager rvManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        rvResult.setLayoutManager(rvManager);
+        //add SnapHelper to make sure RecyclerView is snapped on an item when user is swiping the RecyclerView
+        SnapHelper snapHelper = new PagerSnapHelper();
+        snapHelper.attachToRecyclerView(rvResult);
         AdapterResult adapter = new AdapterResult(rekomendasis);
         rvResult.setAdapter(adapter);
-//        LatLng places = new LatLng(Double.parseDouble(rekomendasi.getLatTempat()), Double.parseDouble(rekomendasi.getLonTempat()));
-//        mMap.addMarker(new MarkerOptions().position(places).title(rekomendasi.getNamaTempat()));
-//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(places, 15f));
+        addMarkers(rekomendasis);
+        Log.d("currentPosition", "Current position is " + currentPosRv);
+        LatLng firstPlaces = new LatLng(Double.parseDouble(rekomendasis.get(0).getLatTempat()), Double.parseDouble(rekomendasis.get(0).getLonTempat()));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(firstPlaces, 15f));
+
+        //listener to make sure map camera is moving when user is scrolling the RecyclerView
+        rvResult.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE){
+                    currentPosRv = rvManager.findFirstCompletelyVisibleItemPosition();
+                    Log.d("currentPosition", "Current position is " + currentPosRv);
+                    LatLng currentPlaces = new LatLng(Double.parseDouble(rekomendasis.get(currentPosRv).getLatTempat()), Double.parseDouble(rekomendasis.get(currentPosRv).getLonTempat()));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPlaces, 15f));
+
+                }
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
     }
 
     @Override

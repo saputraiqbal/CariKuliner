@@ -46,7 +46,7 @@ public class AdapterResult extends RecyclerView.Adapter<AdapterResult.VHolder> {
         holder.resultName.setText(rekomendasi.getNamaTempat());
         DecimalFormat format = new DecimalFormat("#.##");
         format.setRoundingMode(RoundingMode.CEILING);
-        String jarak = "Sekitar " + format.format(rekomendasi.getJarak()) + " km dari posisimu saat ini";
+        String jarak = format.format(rekomendasi.getJarak()) + " km dari posisimu saat ini";
         holder.resultDistance.setText(jarak);
         final String uriLocs = "http://maps.google.com/maps?daddr=" + rekomendasi.getLatTempat() + "," + rekomendasi.getLonTempat();
         holder.goToMaps.setOnClickListener(new View.OnClickListener() {

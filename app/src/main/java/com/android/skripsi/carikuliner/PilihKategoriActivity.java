@@ -28,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PilihKategoriActivity extends AppCompatActivity implements ConnectionInterface, GetDataInterface, DialogInterface.OnClickListener {
+public class PilihKategoriActivity extends AppCompatActivity implements ConnectionInterface, UIInterface, DialogInterface.OnClickListener {
 
     ApiInterface apiInterface;
     private RecyclerView rvData;

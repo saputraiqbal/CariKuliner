@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-public class HomeActivity extends AppCompatActivity implements View.OnClickListener{
+public class HomeActivity extends AppCompatActivity implements UIInterface, View.OnClickListener{
     Button beginFind;
     TextView txtViewJarak, txtViewRating, txtViewHarga, txtViewUsia;
 
@@ -19,7 +19,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         setupUI();
     }
 
-    private void setupUI(){
+    @Override
+    public void setupUI() {
         txtViewJarak = findViewById(R.id.txtIntroJarak);
         txtViewHarga = findViewById(R.id.txtIntroHarga);
         txtViewRating = findViewById(R.id.txtIntroRating);
@@ -31,6 +32,16 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         txtViewRating.setText(R.string.intro_rating);
         txtViewUsia.setText(R.string.intro_usia);
         beginFind.setOnClickListener(this);
+    }
+
+    @Override
+    public void loadData() {
+
+    }
+
+    @Override
+    public void updateUI() {
+
     }
 
     @Override
